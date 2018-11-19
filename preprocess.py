@@ -69,16 +69,19 @@ def reorder_vertexes(xy_list):
 
 
 def resize_image(im, max_img_size=cfg.max_train_img_size):
+    # print 'im.width', im.width, 'im.height', im.height
     im_width = np.minimum(im.width, max_img_size)
     if im_width == max_img_size < im.width:
-        im_height = int((im_width / im.width) * im.height)
+        im_height = int((1.0* im_width / im.width) * im.height)
     else:
         im_height = im.height
     o_height = np.minimum(im_height, max_img_size)
+    # print o_height
     if o_height == max_img_size < im_height:
-        o_width = int((o_height / im_height) * im_width)
+        o_width = int((1.0*o_height / im_height) * im_width)
     else:
         o_width = im_width
+    # print o_width
     d_wight = o_width - (o_width % 32)
     d_height = o_height - (o_height % 32)
     return d_wight, d_height
@@ -103,7 +106,7 @@ def preprocess():
         os.mkdir(show_act_image_dir)
 
     o_img_list = os.listdir(origin_image_dir)
-    print('found %d origin images.' % len(o_img_list))
+    # print('found %d origin images.' % len(o_img_list))
     train_val_set = []
     for o_img_fname, _ in zip(o_img_list, tqdm(range(len(o_img_list)))):
         with Image.open(os.path.join(origin_image_dir, o_img_fname)) as im:
@@ -135,22 +138,22 @@ def preprocess():
                                tuple(xy_list[0])
                                ],
                               width=2, fill='green')
-                    draw.line([tuple(shrink_xy_list[0]),
-                               tuple(shrink_xy_list[1]),
-                               tuple(shrink_xy_list[2]),
-                               tuple(shrink_xy_list[3]),
-                               tuple(shrink_xy_list[0])
-                               ],
-                              width=2, fill='blue')
-                    vs = [[[0, 0, 3, 3, 0], [1, 1, 2, 2, 1]],
-                          [[0, 0, 1, 1, 0], [2, 2, 3, 3, 2]]]
-                    for q_th in range(2):
-                        draw.line([tuple(xy_list[vs[long_edge][q_th][0]]),
-                                   tuple(shrink_1[vs[long_edge][q_th][1]]),
-                                   tuple(shrink_1[vs[long_edge][q_th][2]]),
-                                   tuple(xy_list[vs[long_edge][q_th][3]]),
-                                   tuple(xy_list[vs[long_edge][q_th][4]])],
-                                  width=3, fill='yellow')
+                    # draw.line([tuple(shrink_xy_list[0]),
+                    #            tuple(shrink_xy_list[1]),
+                    #            tuple(shrink_xy_list[2]),
+                    #            tuple(shrink_xy_list[3]),
+                    #            tuple(shrink_xy_list[0])
+                    #            ],
+                    #           width=2, fill='blue')
+                    # vs = [[[0, 0, 3, 3, 0], [1, 1, 2, 2, 1]],
+                    #       [[0, 0, 1, 1, 0], [2, 2, 3, 3, 2]]]
+                    # for q_th in range(2):
+                    #     draw.line([tuple(xy_list[vs[long_edge][q_th][0]]),
+                    #                tuple(shrink_1[vs[long_edge][q_th][1]]),
+                    #                tuple(shrink_1[vs[long_edge][q_th][2]]),
+                    #                tuple(xy_list[vs[long_edge][q_th][3]]),
+                    #                tuple(xy_list[vs[long_edge][q_th][4]])],
+                    #               width=3, fill='yellow')
             if cfg.gen_origin_img:
                 im.save(os.path.join(train_image_dir, o_img_fname))
             np.save(os.path.join(
@@ -164,9 +167,9 @@ def preprocess():
                                                      d_height))
 
     train_img_list = os.listdir(train_image_dir)
-    print('found %d train images.' % len(train_img_list))
+    # print('found %d train images.' % len(train_img_list))
     train_label_list = os.listdir(train_label_dir)
-    print('found %d train labels.' % len(train_label_list))
+    # print('found %d train labels.' % len(train_label_list))
 
     random.shuffle(train_val_set)
     val_count = int(cfg.validation_split_ratio * len(train_val_set))
